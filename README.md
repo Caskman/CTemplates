@@ -1,4 +1,4 @@
-C Template Data Structures
+# C Template Data Structures #
 
 This script produces the files to define and manipulate a specified data type by using one of the following data structures:
 	Doubly linked list
@@ -7,7 +7,7 @@ Still have more to add
 
 ===============================================================================
 
-Example
+### Example ###
 
 Running the following:
 
