@@ -2,8 +2,8 @@
 import re,sys,os,getopt
 from sys import exit
 usage = """
-	Usage: -l <list_type_name> -- for list template
-			-t <hash_table_type_name> -- for hash table template
+Usage: -l <list_type_name> -- for list template
+        -t <hash_table_type_name> -- for hash table template
 
 """
 
@@ -21,78 +21,78 @@ templatedir = 'templates/'
 
 arg_options = 'l:t:'
 
-def filterText(contents,type,upper,lower):
-	contents = re.sub(r'\$\$',type,contents)
-	contents = re.sub(r'\$\^\^\$',upper,contents)
-	contents = re.sub(r'\$v\$',lower,contents)
-	return contents
+def filter_text(contents,type,upper,lower):
+    contents = re.sub(r'\$\$',type,contents)
+    contents = re.sub(r'\$\^\^\$',upper,contents)
+    contents = re.sub(r'\$v\$',lower,contents)
+    return contents
 
 
-def createTemplateList(template_type):
-	upper = template_type.upper()
-	lower = template_type.lower()
+def create_template_list(template_type):
+    upper = template_type.upper()
+    lower = template_type.lower()
 
 
-	with open(templatedir+template_list_code,'r') as filein:
-		contents = filein.read()
-		code = filterText(contents,template_type,upper,lower)
-	with open(lower+template_list_code_filename_suffix,'w') as fileout:
-		fileout.write(code)
+    with open(templatedir+template_list_code,'r') as filein:
+        contents = filein.read()
+        code = filter_text(contents,template_type,upper,lower)
+    with open(lower+template_list_code_filename_suffix,'w') as fileout:
+        fileout.write(code)
 
 
-	with open(templatedir+template_list_header,'r') as filein:
-		contents = filein.read()
-		header = filterText(contents,template_type,upper,lower)
-	with open(lower+template_list_header_filename_suffix,'w') as fileout:
-		fileout.write(header)
+    with open(templatedir+template_list_header,'r') as filein:
+        contents = filein.read()
+        header = filter_text(contents,template_type,upper,lower)
+    with open(lower+template_list_header_filename_suffix,'w') as fileout:
+        fileout.write(header)
 
 
-	with open(templatedir+template_list_imp_header,'r') as filein:
-		contents = filein.read()
-		header_imp = filterText(contents,template_type,upper,lower)
-	with open(lower+template_list_imp_header_filename_suffix,'w') as fileout:
-		fileout.write(header_imp)
+    with open(templatedir+template_list_imp_header,'r') as filein:
+        contents = filein.read()
+        header_imp = filter_text(contents,template_type,upper,lower)
+    with open(lower+template_list_imp_header_filename_suffix,'w') as fileout:
+        fileout.write(header_imp)
 
 
 if __name__ == '__main__':
-	# print 'Check templatedir'
-	# check that template directory exists in working directory
-	if os.path.exists(templatedir):
-		if not os.path.isdir(templatedir):
-			print 'Template directory does not exist'
-			exit(2)
-	else:
-		print 'Template directory does not exist'
-		exit(2)
-	# print 'Check that template files exist'
-	# check that template files exist
-	for template_file in template_files:
-		if not os.path.exists(templatedir+template_file):
-			print 'Template file <'+template_file+'> does not exist'
-			exit(2)
+    # print 'Check templatedir'
+    # check that template directory exists in working directory
+    if os.path.exists(templatedir):
+        if not os.path.isdir(templatedir):
+            print 'Template directory does not exist'
+            exit(2)
+    else:
+        print 'Template directory does not exist'
+        exit(2)
+    # print 'Check that template files exist'
+    # check that template files exist
+    for template_file in template_files:
+        if not os.path.exists(templatedir+template_file):
+            print 'Template file <'+template_file+'> does not exist'
+            exit(2)
 
-	# print 'Arguments: ' + str(sys.argv)
-	# print 'Check CL args'
-	try:
-		opts,args = getopt.getopt(sys.argv[1:],arg_options)
-	except getopt.GetoptError:
-		print usage
-		exit(2)
+    # print 'Arguments: ' + str(sys.argv)
+    # print 'Check CL args'
+    try:
+        opts,args = getopt.getopt(sys.argv[1:],arg_options)
+    except getopt.GetoptError:
+        print usage
+        exit(2)
 
-	# print 'Opts: '+str(opts)
-	# print 'Args: '+str(args)
-	# print 'Check only one option'
-	if len(opts) != 1:
-		print 'Specify one option'
-		# print opts
-		exit(2)
+    # print 'Opts: '+str(opts)
+    # print 'Args: '+str(args)
+    # print 'Check only one option'
+    if len(opts) != 1:
+        print 'Specify one option'
+        # print opts
+        exit(2)
 
-	# print 'Execute'
-	if opts[0][0] == '-l':
-		print 'Creating template list of type: '+opts[0][1]
-		createTemplateList(opts[0][1])
-	elif opts[0][0] == '-t':
-		print "Hash tables haven't been implemented yet"
+    # print 'Execute'
+    if opts[0][0] == '-l':
+        print 'Creating template list of type: '+opts[0][1]
+        create_template_list(opts[0][1])
+    elif opts[0][0] == '-t':
+        print "Hash tables haven't been implemented yet"
 
 
 
