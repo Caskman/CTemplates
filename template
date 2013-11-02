@@ -2,9 +2,10 @@
 import re,sys,os,getopt
 from sys import exit
 usage = """
-Usage: -l <list_type_name> -- for list template
+Usage:  -l <list_type_name> -- for list template
         -t <hash_table_type_name> -- for hash table template
-
+        -o <output_directory> -- optional
+        -i -- generate implementation header file
 """
 
 template_list_header = 'templatelist.h'
@@ -16,10 +17,23 @@ template_list_imp_header_filename_suffix = 'list_imp.h'
 
 
 template_files = [template_list_header,template_list_code,template_list_imp_header]
-
 templatedir = 'templates/'
+arg_options = 'l:t:o:i'
+outputdir = './'
+generate_implementation_header = False
 
-arg_options = 'l:t:'
+def checkOutputDir(dir):
+    if os.path.exists(dir):
+        if os.path.isdir(dir):
+            if os.access(dir,os.W_OK):
+                return True
+            else:
+                print 'Error: do not have write permission for '+dir
+        else:
+            print 'Error: '+dir+' is not a directory'
+    else:
+        print 'Error: '+dir+' does not exist'
+
 
 def filter_text(contents,type,upper,lower):
     contents = re.sub(r'\$\$',type,contents)
@@ -29,6 +43,7 @@ def filter_text(contents,type,upper,lower):
 
 
 def create_template_list(template_type):
+    print 'Creating template list of type: '+template_type
     upper = template_type.upper()
     lower = template_type.lower()
 
@@ -36,22 +51,22 @@ def create_template_list(template_type):
     with open(templatedir+template_list_code,'r') as filein:
         contents = filein.read()
         code = filter_text(contents,template_type,upper,lower)
-    with open(lower+template_list_code_filename_suffix,'w') as fileout:
+    with open(outputdir+lower+template_list_code_filename_suffix,'w') as fileout:
         fileout.write(code)
 
 
     with open(templatedir+template_list_header,'r') as filein:
         contents = filein.read()
         header = filter_text(contents,template_type,upper,lower)
-    with open(lower+template_list_header_filename_suffix,'w') as fileout:
+    with open(outputdir+lower+template_list_header_filename_suffix,'w') as fileout:
         fileout.write(header)
 
-
-    with open(templatedir+template_list_imp_header,'r') as filein:
-        contents = filein.read()
-        header_imp = filter_text(contents,template_type,upper,lower)
-    with open(lower+template_list_imp_header_filename_suffix,'w') as fileout:
-        fileout.write(header_imp)
+    if (generate_implementation_header):
+        with open(templatedir+template_list_imp_header,'r') as filein:
+            contents = filein.read()
+            header_imp = filter_text(contents,template_type,upper,lower)
+        with open(outputdir+lower+template_list_imp_header_filename_suffix,'w') as fileout:
+            fileout.write(header_imp)
 
 
 if __name__ == '__main__':
@@ -82,18 +97,34 @@ if __name__ == '__main__':
     # print 'Opts: '+str(opts)
     # print 'Args: '+str(args)
     # print 'Check only one option'
-    if len(opts) != 1:
-        print 'Specify one option'
-        # print opts
-        exit(2)
+    # if len(opts) != 1:
+    #     print 'Specify one option'
+    #     print usage
+    #     # print opts
+    #     exit(2)
+
 
     # print 'Execute'
-    if opts[0][0] == '-l':
-        print 'Creating template list of type: '+opts[0][1]
-        create_template_list(opts[0][1])
-    elif opts[0][0] == '-t':
-        print "Hash tables haven't been implemented yet"
-
+    for opt in opts:
+        # print opt
+        if opt[0] == '-l':
+            executee = create_template_list
+            earg = opt[1]
+            # create_template_list(opt[1])
+        elif opt[0] == '-t':
+            print "Hash tables haven't been implemented yet"
+        elif opt[0] == '-o':
+            if checkOutputDir(opt[1]):
+                outputdir = opt[1]
+            else:
+                exit(2)
+        elif opt[0] == '-i':
+            generate_implementation_header = True
+        else:
+            print 'Error: unrecognized option '+opt[0]
+            print usage
+            exit(2)
+    executee(earg)
 
 
 
