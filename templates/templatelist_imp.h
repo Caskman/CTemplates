@@ -4,7 +4,7 @@
 
 typedef IMPLEMENTATION-TYPE-HERE $$;
 
-void printData($$ *data);
-void freeData($$ *data);
+void print$$($$ *data);
+void free$$($$ *data);
 
 #endif

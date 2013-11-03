@@ -24,6 +24,7 @@ void append$$Node($$List *list,$$Node *node);
 void print$$List($$List *list);
 void free$$List($$List *list);
 void free$$Node($$Node *node);
+void free$$NodeOnly($$Node *node);
 void insert$$NodeBefore($$List *list,$$Node *cur,$$Node *node);
 $$Node* removeIndex$$($$List* list,int index);
 void remove$$($$List *list,$$Node *node);

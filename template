@@ -17,7 +17,7 @@ template_list_imp_header_filename_suffix = 'list_imp.h'
 
 
 template_files = [template_list_header,template_list_code,template_list_imp_header]
-templatedir = 'templates/'
+templatedir = '/home/uofkuv/453/Structures/template/templates/'
 arg_options = 'l:t:o:i'
 outputdir = './'
 generate_implementation_header = False

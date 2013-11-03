@@ -44,7 +44,7 @@ void append$$Node($$List* list,$$Node* node) {
 void print$$List($$List* list) {
 	$$Node *temp;
 	for (temp = list->head->next; temp != NULL; temp = temp->next) {
-		printData(temp->data);
+		print$$(temp->data);
 	}
 }
 
@@ -55,15 +55,32 @@ void free$$NodeRec($$Node *node) {
 	}
 }
 
+void free$$NodeOnlyRec($$Node *node) {
+	if (node != NULL) {
+		free$$NodeOnlyRec(node->next);
+		free$$NodeOnly(node);
+	}
+}
+
+void free$$NodeOnly($$Node *node) {
+	if (node != NULL) free(node);
+}
+
 void free$$Node($$Node *node) {
-	if (node == NULL)
-		return;
-	freeData(node->data);
-	free(node);
+	if (node != NULL) {
+		free$$(node->data);
+		free(node);
+	}
 }
 
 void free$$List($$List *list) {
 	free$$NodeRec(list->head);
+	free(list);
+}
+
+
+void free$$ListOnly($$List *list) {
+	free$$NodeOnlyRec(list->head);
 	free(list);
 }
 
