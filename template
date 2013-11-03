@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import re,sys,os,getopt
 from sys import exit
-usage = """Usage:  -l <list_type_name> -- for list template
+USAGE = """Usage:  -l <list_type_name> -- for list template
         -t <"key_typename,value_typename"> -- for hash table template
         -o <output_directory> -- optional
         -i -- generate implementation header file
@@ -24,13 +24,19 @@ TEMPLATE_HASHTABLE_HEADER_SUFFIX = 'hashtable.h'
 TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX = 'hashtable_imp.h'
 TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX = 'hashtabletypes.h'
 
+TEMPLATE_FILES = [TEMPLATE_LIST_HEADER
+    ,TEMPLATE_LIST_CODE
+    ,TEMPLATE_LIST_IMP_HEADER
+    ,TEMPLATE_HASHTABLE_CODE
+    ,TEMPLATE_HASHTABLE_HEADER
+    ,TEMPLATE_HASHTABLE_IMP_HEADER
+    ,TEMPLATE_HASHTABLE_TYPES_HEADER]
 
-template_files = [TEMPLATE_LIST_HEADER,TEMPLATE_LIST_CODE,TEMPLATE_LIST_IMP_HEADER]
-templatedir = '/home/uofkuv/453/Structures/template/templates/'
-arg_options = 'l:t:o:iIh'
-outputdir = './'
-generate_implementation_header = False
-generate_template_files = True
+TEMPLATE_DIR = '/home/uofkuv/453/Structures/template/templates/'
+ARG_OPTIONS = 'l:t:o:iIh'
+OUTPUT_DIR = './'
+GENERATE_IMPLEMENTATION_HEADER = False
+GENERATE_TEMPLATE_FILES = True
 
 def checkOutputDir(dir):
     if os.path.exists(dir):
@@ -43,13 +49,6 @@ def checkOutputDir(dir):
             print 'Error: '+dir+' is not a directory'
     else:
         print 'Error: '+dir+' does not exist'
-
-
-def filter_text(contents,type,upper,lower):
-    contents = re.sub(r'\$\$',type,contents)
-    contents = re.sub(r'\$\^\^\$',upper,contents)
-    contents = re.sub(r'\$v\$',lower,contents)
-    return contents
 
 def subContents(contents,subs):
     for sub in subs:
@@ -80,52 +79,40 @@ def create_template_hashtable(template_type):
         ,(r'\$Vv\$',value)
         ,(r'\$vv\$',value.lower())]
 
-    if generate_template_files:
+    if GENERATE_TEMPLATE_FILES:
         # Create the bucket structure
         create_template_list(entry_name+'Entry')
 
-        templatize(templatedir + TEMPLATE_HASHTABLE_CODE,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_CODE_SUFFIX,subs)
-        templatize(templatedir + TEMPLATE_HASHTABLE_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_HEADER_SUFFIX,subs)
-        templatize(templatedir + TEMPLATE_HASHTABLE_TYPES_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX,subs)
+        templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_CODE,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_CODE_SUFFIX,subs)
+        templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_HEADER,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_HEADER_SUFFIX,subs)
+        templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_TYPES_HEADER,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX,subs)
 
-    if generate_implementation_header:
-        templatize(templatedir + TEMPLATE_HASHTABLE_IMP_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX,subs)
-
-
-
+    if GENERATE_IMPLEMENTATION_HEADER:
+        templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_IMP_HEADER,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX,subs)
 
 def create_template_list(template_type):
     # print 'Creating template list of type: '+template_type
     upper = template_type.upper()
     lower = template_type.lower()
 
-    if generate_template_files:
-        with open(templatedir+TEMPLATE_LIST_CODE,'r') as filein:
-            contents = filein.read()
-            code = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+TEMPLATE_LIST_CODE_SUFFIX,'w') as fileout:
-            fileout.write(code)
+    subs = [(r'\$\$',template_type)
+        ,(r'\$\^\^\$',upper)
+        ,(r'\$v\$',lower)]
 
+    if GENERATE_TEMPLATE_FILES:
 
-        with open(templatedir+TEMPLATE_LIST_HEADER,'r') as filein:
-            contents = filein.read()
-            header = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+TEMPLATE_LIST_HEADER_SUFFIX,'w') as fileout:
-            fileout.write(header)
+        templatize(TEMPLATE_DIR+TEMPLATE_LIST_CODE,OUTPUT_DIR+lower+TEMPLATE_LIST_CODE_SUFFIX,subs)
+        templatize(TEMPLATE_DIR+TEMPLATE_LIST_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_HEADER_SUFFIX,subs)
 
-    if (generate_implementation_header):
-        with open(templatedir+TEMPLATE_LIST_IMP_HEADER,'r') as filein:
-            contents = filein.read()
-            header_imp = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,'w') as fileout:
-            fileout.write(header_imp)
+    if (GENERATE_IMPLEMENTATION_HEADER):
+        templatize(TEMPLATE_DIR+TEMPLATE_LIST_IMP_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,subs)
 
 
 if __name__ == '__main__':
-    # print 'Check templatedir'
+    # print 'Check TEMPLATE_DIR'
     # check that template directory exists in working directory
-    if os.path.exists(templatedir):
-        if not os.path.isdir(templatedir):
+    if os.path.exists(TEMPLATE_DIR):
+        if not os.path.isdir(TEMPLATE_DIR):
             print 'Template directory does not exist'
             exit(2)
     else:
@@ -133,17 +120,17 @@ if __name__ == '__main__':
         exit(2)
     # print 'Check that template files exist'
     # check that template files exist
-    for template_file in template_files:
-        if not os.path.exists(templatedir+template_file):
+    for template_file in TEMPLATE_FILES:
+        if not os.path.exists(TEMPLATE_DIR+template_file):
             print 'Template file <'+template_file+'> does not exist'
             exit(2)
 
     # print 'Arguments: ' + str(sys.argv)
     # print 'Check CL args'
     try:
-        opts,args = getopt.getopt(sys.argv[1:],arg_options)
+        opts,args = getopt.getopt(sys.argv[1:],ARG_OPTIONS)
     except getopt.GetoptError:
-        print usage
+        print USAGE
         exit(2)
 
     # print 'Opts: '+str(opts)
@@ -151,7 +138,7 @@ if __name__ == '__main__':
     # print 'Check only one option'
     # if len(opts) != 1:
     #     print 'Specify one option'
-    #     print usage
+    #     print USAGE
     #     # print opts
     #     exit(2)
 
@@ -169,26 +156,26 @@ if __name__ == '__main__':
             earg = opt[1]
         elif opt[0] == '-o':
             if checkOutputDir(opt[1]):
-                outputdir = opt[1]
+                OUTPUT_DIR = opt[1]
             else:
                 exit(2)
         elif opt[0] == '-i':
-            generate_implementation_header = True
+            GENERATE_IMPLEMENTATION_HEADER = True
         elif opt[0] == '-I':
-            generate_implementation_header = True
-            generate_template_files = False
+            GENERATE_IMPLEMENTATION_HEADER = True
+            GENERATE_TEMPLATE_FILES = False
         elif opt[0] == '-h':
-            print usage
+            print USAGE
             exit(0)
         else:
             print 'Error: unrecognized option '+opt[0]
-            print usage
+            print USAGE
             exit(2)
     if 'executee' in globals():
         executee(earg)
     else:
         print 'Error: must choose a data structure to generate'
-        print usage
+        print USAGE
         exit(2)
 
 
