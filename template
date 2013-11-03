@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import re,sys,os,getopt
 from sys import exit
-usage = """
-Usage:  -l <list_type_name> -- for list template
+usage = """Usage:  -l <list_type_name> -- for list template
         -t <hash_table_type_name> -- for hash table template
         -o <output_directory> -- optional
         -i -- generate implementation header file
+        -I -- generate only the implementation header file
 """
 
 template_list_header = 'templatelist.h'
@@ -18,9 +18,10 @@ template_list_imp_header_filename_suffix = 'list_imp.h'
 
 template_files = [template_list_header,template_list_code,template_list_imp_header]
 templatedir = '/home/uofkuv/453/Structures/template/templates/'
-arg_options = 'l:t:o:i'
+arg_options = 'l:t:o:iIh'
 outputdir = './'
 generate_implementation_header = False
+generate_template_files = True
 
 def checkOutputDir(dir):
     if os.path.exists(dir):
@@ -105,6 +106,7 @@ if __name__ == '__main__':
 
 
     # print 'Execute'
+    # print opts
     for opt in opts:
         # print opt
         if opt[0] == '-l':
@@ -120,11 +122,22 @@ if __name__ == '__main__':
                 exit(2)
         elif opt[0] == '-i':
             generate_implementation_header = True
+        elif opt[0] == '-I':
+            generate_implementation_header = True
+            generate_template_files = False
+        elif opt[0] == '-h':
+            print usage
+            exit(0)
         else:
             print 'Error: unrecognized option '+opt[0]
             print usage
             exit(2)
-    executee(earg)
+    if 'executee' in globals():
+        executee(earg)
+    else:
+        print 'Error: must choose a data structure to generate'
+        print usage
+        exit(2)
 
 
 
