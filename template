@@ -71,6 +71,7 @@ def create_template_hashtable(template_type):
     value = splits[1]
     entry_name = key+'K'+value+'V'
     lower_entry_name = entry_name.lower()
+    list_type = entry_name+'Entry'
 
     subs = [(r'\$KK\$',key.upper())
         ,(r'\$Kk\$',key)
@@ -81,7 +82,10 @@ def create_template_hashtable(template_type):
 
     if GENERATE_TEMPLATE_FILES:
         # Create the bucket structure
-        create_template_list(entry_name+'Entry')
+        create_template_list(list_type)
+        create_template_list_imp_header(list_type)
+        sub = [(r'typedef.*;','#include "' + lower_entry_name + TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX + '"')]
+        templatize(OUTPUT_DIR + list_type.lower() + TEMPLATE_LIST_IMP_HEADER_SUFFIX,OUTPUT_DIR + list_type.lower() + TEMPLATE_LIST_IMP_HEADER_SUFFIX,sub)
 
         templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_CODE,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_CODE_SUFFIX,subs)
         templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_HEADER,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_HEADER_SUFFIX,subs)
@@ -89,6 +93,15 @@ def create_template_hashtable(template_type):
 
     if GENERATE_IMPLEMENTATION_HEADER:
         templatize(TEMPLATE_DIR + TEMPLATE_HASHTABLE_IMP_HEADER,OUTPUT_DIR + lower_entry_name + TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX,subs)
+
+def create_template_list_imp_header(template_type):
+    upper = template_type.upper()
+    lower = template_type.lower()
+
+    subs = [(r'\$\$',template_type)
+        ,(r'\$\^\^\$',upper)
+        ,(r'\$v\$',lower)]
+    templatize(TEMPLATE_DIR+TEMPLATE_LIST_IMP_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,subs)
 
 def create_template_list(template_type):
     # print 'Creating template list of type: '+template_type
@@ -105,7 +118,8 @@ def create_template_list(template_type):
         templatize(TEMPLATE_DIR+TEMPLATE_LIST_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_HEADER_SUFFIX,subs)
 
     if (GENERATE_IMPLEMENTATION_HEADER):
-        templatize(TEMPLATE_DIR+TEMPLATE_LIST_IMP_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,subs)
+        create_template_list_imp_header(template_type)
+    # templatize(TEMPLATE_DIR+TEMPLATE_LIST_IMP_HEADER,OUTPUT_DIR+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,subs)
 
 
 if __name__ == '__main__':
