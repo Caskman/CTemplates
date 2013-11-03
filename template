@@ -8,24 +8,24 @@ usage = """Usage:  -l <list_type_name> -- for list template
         -I -- generate only the implementation header file
 """
 # template list 
-template_list_code = 'templatelist.c'
-template_list_code_filename_suffix = 'list.c'
-template_list_header = 'templatelist.h'
-template_list_header_filename_suffix = 'list.h'
-template_list_imp_header = 'templatelist_imp.h'
-template_list_imp_header_filename_suffix = 'list_imp.h'
+TEMPLATE_LIST_CODE = 'templatelist.c'
+TEMPLATE_LIST_CODE_SUFFIX = 'list.c'
+TEMPLATE_LIST_HEADER = 'templatelist.h'
+TEMPLATE_LIST_HEADER_SUFFIX = 'list.h'
+TEMPLATE_LIST_IMP_HEADER = 'templatelist_imp.h'
+TEMPLATE_LIST_IMP_HEADER_SUFFIX = 'list_imp.h'
 # template hash table
-template_hashtable_code = 'templatehashtable.c'
-template_hashtable_header = 'templatehashtable.h'
-template_hashtable_imp_header = 'templatehashtable_imp.h'
-template_hashtable_types_header = 'templatehashtabletypes.h'
-template_hashtable_code_filename_suffix = 'hashtable.c'
-template_hashtable_header_filename_suffix = 'hashtable.h'
-template_hashtable_imp_header_filename_suffix = 'hashtable_imp.h'
-template_hashtable_types_header_filename_suffix = 'hashtabletypes.h'
+TEMPLATE_HASHTABLE_CODE = 'templatehashtable.c'
+TEMPLATE_HASHTABLE_HEADER = 'templatehashtable.h'
+TEMPLATE_HASHTABLE_IMP_HEADER = 'templatehashtable_imp.h'
+TEMPLATE_HASHTABLE_TYPES_HEADER = 'templatehashtabletypes.h'
+TEMPLATE_HASHTABLE_CODE_SUFFIX = 'hashtable.c'
+TEMPLATE_HASHTABLE_HEADER_SUFFIX = 'hashtable.h'
+TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX = 'hashtable_imp.h'
+TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX = 'hashtabletypes.h'
 
 
-template_files = [template_list_header,template_list_code,template_list_imp_header]
+template_files = [TEMPLATE_LIST_HEADER,TEMPLATE_LIST_CODE,TEMPLATE_LIST_IMP_HEADER]
 templatedir = '/home/uofkuv/453/Structures/template/templates/'
 arg_options = 'l:t:o:iIh'
 outputdir = './'
@@ -82,14 +82,14 @@ def create_template_hashtable(template_type):
 
     if generate_template_files:
         # Create the bucket structure
-        create_template_list(entry_name)
+        create_template_list(entry_name+'Entry')
 
-        templatize(templatedir + template_hashtable_code,outputdir + lower_entry_name + template_hashtable_code_filename_suffix,subs)
-        templatize(templatedir + template_hashtable_header,outputdir + lower_entry_name + template_hashtable_header_filename_suffix,subs)
-        templatize(templatedir + template_hashtable_types_header,outputdir + lower_entry_name + template_hashtable_types_header_filename_suffix,subs)
+        templatize(templatedir + TEMPLATE_HASHTABLE_CODE,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_CODE_SUFFIX,subs)
+        templatize(templatedir + TEMPLATE_HASHTABLE_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_HEADER_SUFFIX,subs)
+        templatize(templatedir + TEMPLATE_HASHTABLE_TYPES_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_TYPES_HEADER_SUFFIX,subs)
 
     if generate_implementation_header:
-        templatize(templatedir + template_hashtable_imp_header,outputdir + lower_entry_name + template_hashtable_imp_header_filename_suffix,subs)
+        templatize(templatedir + TEMPLATE_HASHTABLE_IMP_HEADER,outputdir + lower_entry_name + TEMPLATE_HASHTABLE_IMP_HEADER_SUFFIX,subs)
 
 
 
@@ -100,24 +100,24 @@ def create_template_list(template_type):
     lower = template_type.lower()
 
     if generate_template_files:
-        with open(templatedir+template_list_code,'r') as filein:
+        with open(templatedir+TEMPLATE_LIST_CODE,'r') as filein:
             contents = filein.read()
             code = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+template_list_code_filename_suffix,'w') as fileout:
+        with open(outputdir+lower+TEMPLATE_LIST_CODE_SUFFIX,'w') as fileout:
             fileout.write(code)
 
 
-        with open(templatedir+template_list_header,'r') as filein:
+        with open(templatedir+TEMPLATE_LIST_HEADER,'r') as filein:
             contents = filein.read()
             header = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+template_list_header_filename_suffix,'w') as fileout:
+        with open(outputdir+lower+TEMPLATE_LIST_HEADER_SUFFIX,'w') as fileout:
             fileout.write(header)
 
     if (generate_implementation_header):
-        with open(templatedir+template_list_imp_header,'r') as filein:
+        with open(templatedir+TEMPLATE_LIST_IMP_HEADER,'r') as filein:
             contents = filein.read()
             header_imp = filter_text(contents,template_type,upper,lower)
-        with open(outputdir+lower+template_list_imp_header_filename_suffix,'w') as fileout:
+        with open(outputdir+lower+TEMPLATE_LIST_IMP_HEADER_SUFFIX,'w') as fileout:
             fileout.write(header_imp)
 
 
