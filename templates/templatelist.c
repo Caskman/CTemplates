@@ -68,7 +68,7 @@ void free$$NodeOnly($$Node *node) {
 
 void free$$Node($$Node *node) {
 	if (node != NULL) {
-		free$$(node->data);
+		if (node->data != NULL) free$$(node->data);
 		free(node);
 	}
 }

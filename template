@@ -2,18 +2,27 @@
 import re,sys,os,getopt
 from sys import exit
 usage = """Usage:  -l <list_type_name> -- for list template
-        -t <hash_table_type_name> -- for hash table template
+        -t <"key_typename,value_typename"> -- for hash table template
         -o <output_directory> -- optional
         -i -- generate implementation header file
         -I -- generate only the implementation header file
 """
-
-template_list_header = 'templatelist.h'
-template_list_header_filename_suffix = 'list.h'
+# template list 
 template_list_code = 'templatelist.c'
 template_list_code_filename_suffix = 'list.c'
+template_list_header = 'templatelist.h'
+template_list_header_filename_suffix = 'list.h'
 template_list_imp_header = 'templatelist_imp.h'
 template_list_imp_header_filename_suffix = 'list_imp.h'
+# template hash table
+template_hashtable_code = 'templatehashtable.c'
+template_hashtable_header = 'templatehashtable.h'
+template_hashtable_imp_header = 'templatehashtable_imp.h'
+template_hashtable_types_header = 'templatehashtabletypes.h'
+template_hashtable_code_filename_suffix = 'hashtable.c'
+template_hashtable_header_filename_suffix = 'hashtable.h'
+template_hashtable_imp_header_filename_suffix = 'hashtable_imp.h'
+template_hashtable_types_header_filename_suffix = 'hashtabletypes.h'
 
 
 template_files = [template_list_header,template_list_code,template_list_imp_header]
@@ -42,25 +51,67 @@ def filter_text(contents,type,upper,lower):
     contents = re.sub(r'\$v\$',lower,contents)
     return contents
 
+def subContents(contents,subs):
+    for sub in subs:
+        contents = re.sub(sub[0],sub[1],contents)
+    return contents
+
+def templatize(filein,fileout,subs):
+    with open(filein,'r') as f:
+        contents = f.read()
+        # print 'opened template file'
+        contents = subContents(contents,subs)
+        # print 'replaced template file contents'
+    with open(fileout,'w') as f:
+        f.write(contents)
+        # print 'wrote new template file contents'
+
+def create_template_hashtable(template_type):
+    splits = template_type.split(',')
+    key = splits[0]
+    value = splits[1]
+    entry_name = key+'K'+value+'V'
+    lower_entry_name = entry_name.lower()
+
+    subs = [(r'\$KK\$',key.upper())
+        ,(r'\$Kk\$',key)
+        ,(r'\$kk\$',key.lower())
+        ,(r'\$VV\$',value.upper())
+        ,(r'\$Vv\$',value)
+        ,(r'\$vv\$',value.lower())]
+
+    if generate_template_files:
+        # Create the bucket structure
+        create_template_list(entry_name)
+
+        templatize(templatedir + template_hashtable_code,outputdir + lower_entry_name + template_hashtable_code_filename_suffix,subs)
+        templatize(templatedir + template_hashtable_header,outputdir + lower_entry_name + template_hashtable_header_filename_suffix,subs)
+        templatize(templatedir + template_hashtable_types_header,outputdir + lower_entry_name + template_hashtable_types_header_filename_suffix,subs)
+
+    if generate_implementation_header:
+        templatize(templatedir + template_hashtable_imp_header,outputdir + lower_entry_name + template_hashtable_imp_header_filename_suffix,subs)
+
+
+
 
 def create_template_list(template_type):
-    print 'Creating template list of type: '+template_type
+    # print 'Creating template list of type: '+template_type
     upper = template_type.upper()
     lower = template_type.lower()
 
+    if generate_template_files:
+        with open(templatedir+template_list_code,'r') as filein:
+            contents = filein.read()
+            code = filter_text(contents,template_type,upper,lower)
+        with open(outputdir+lower+template_list_code_filename_suffix,'w') as fileout:
+            fileout.write(code)
 
-    with open(templatedir+template_list_code,'r') as filein:
-        contents = filein.read()
-        code = filter_text(contents,template_type,upper,lower)
-    with open(outputdir+lower+template_list_code_filename_suffix,'w') as fileout:
-        fileout.write(code)
 
-
-    with open(templatedir+template_list_header,'r') as filein:
-        contents = filein.read()
-        header = filter_text(contents,template_type,upper,lower)
-    with open(outputdir+lower+template_list_header_filename_suffix,'w') as fileout:
-        fileout.write(header)
+        with open(templatedir+template_list_header,'r') as filein:
+            contents = filein.read()
+            header = filter_text(contents,template_type,upper,lower)
+        with open(outputdir+lower+template_list_header_filename_suffix,'w') as fileout:
+            fileout.write(header)
 
     if (generate_implementation_header):
         with open(templatedir+template_list_imp_header,'r') as filein:
@@ -114,7 +165,8 @@ if __name__ == '__main__':
             earg = opt[1]
             # create_template_list(opt[1])
         elif opt[0] == '-t':
-            print "Hash tables haven't been implemented yet"
+            executee = create_template_hashtable
+            earg = opt[1]
         elif opt[0] == '-o':
             if checkOutputDir(opt[1]):
                 outputdir = opt[1]
