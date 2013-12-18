@@ -26,9 +26,13 @@ typedef struct $kk$_k_$vv$_v_hash_table {
 
 $Kk$K$Vv$VHashTable *new$Kk$K$Vv$VHashTable(int min_capacity);
 void free$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table);
+void free$Kk$K$Vv$VHashTableOnly($Kk$K$Vv$VHashTable *table);
 void put$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$ *key,$Vv$ *value);
 void putEntry$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$K$Vv$VEntry *entry);
 $Vv$ *getValue$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$ *key);
+$Vv$* remove$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$ *key);
+$Kk$K$Vv$VEntry *new$Kk$K$Vv$VEntry($Kk$ *key,$Vv$ *value);
+$Kk$K$Vv$VEntryList* splat$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table);
 
 #endif
 

@@ -3,6 +3,7 @@
 This script produces the files to define and manipulate a specified data type by using one of the following data structures:
 
 	Doubly linked list
+	Hash Table
 
 Still have more to add
 

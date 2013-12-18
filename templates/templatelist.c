@@ -20,7 +20,7 @@ $$Node* new$$Node($$* data) {
 	return newnode;
 }
 
-void insert$$NodeBefore($$List *list,$$Node *cur,$$Node *node) {
+$$List* insert$$NodeBefore($$List *list,$$Node *cur,$$Node *node) {
 	//set links for above
 	node->prev = cur->prev;
 	cur->prev->next = node;
@@ -28,23 +28,32 @@ void insert$$NodeBefore($$List *list,$$Node *cur,$$Node *node) {
 	node->next = cur;
 	cur->prev = node;
 	list->size++;
+	return list;
 }
 
-void append$$($$List *list,$$ *data) {
-	append$$Node(list,new$$Node(data));
+$$List* append$$($$List *list,$$ *data) {
+	return append$$Node(list,new$$Node(data));
 }
 
-void append$$Node($$List* list,$$Node* node) {
+$$List* append$$WoP($$List *list,$$ data) {
+	$$* pdata = ($$*)malloc(sizeof($$));
+	*pdata = data;
+	return append$$(list,pdata);
+}
+
+$$List* append$$Node($$List* list,$$Node* node) {
 	list->tail->next = node;
 	node->prev = list->tail;
 	list->tail = node;
 	list->size++;
+	return list;
 }
 
 void print$$List($$List* list) {
 	$$Node *temp;
 	for (temp = list->head->next; temp != NULL; temp = temp->next) {
 		print$$(temp->data);
+		// printf("\n");
 	}
 }
 
@@ -74,12 +83,14 @@ void free$$Node($$Node *node) {
 }
 
 void free$$List($$List *list) {
+	if (list == NULL) return;
 	free$$NodeRec(list->head);
 	free(list);
 }
 
 
 void free$$ListOnly($$List *list) {
+	if (list == NULL) return;
 	free$$NodeOnlyRec(list->head);
 	free(list);
 }
@@ -93,11 +104,11 @@ $$Node* removeIndex$$($$List* list,int index) {
 
 	if (temp == NULL) return NULL;
 
-	remove$$(list,temp);
+	remove$$Node(list,temp);
 	return temp;
 }
 
-void remove$$($$List *list,$$Node *node) {
+void remove$$Node($$List *list,$$Node *node) {
 	$$Node *before = node->prev;
 	$$Node *after = node->next;
 		
@@ -114,10 +125,101 @@ void remove$$($$List *list,$$Node *node) {
 	list->size--;
 }
 
+$$List* dup$$List($$List *list) {
+	if (list == NULL) return NULL;
+	$$List *newlist = new$$List();
+	$$Node *node;
+	for (node = list->head->next; node != NULL; node = node->next) {
+		append$$Node(newlist,new$$Node(dup$$(node->data)));
+	}
+	return newlist;
+}
+
+$$List* dup$$ListShallow($$List *list) {
+	if (list == NULL) return NULL;
+	$$List *newlist = new$$List();
+	$$Node *node;
+	for (node = list->head->next; node != NULL; node = node->next) {
+		append$$Node(newlist,new$$Node(node->data));
+	}
+	return newlist;
+}
 
 
+$$List* makeSE$$List($$ *data) {
+	$$List *list = new$$List();
+	append$$(list,data);
+	return list;
+}
 
+$$List* makeSE$$ListWoP($$ data) {
+	$$* pdata = ($$*)malloc(sizeof($$));
+	*pdata = data;
+	return makeSE$$List(pdata);
+}
 
+$$* remove$$($$List *list,$$ *data) {
+	$$Node *node;
+	for (node = list->head->next; node != NULL; node = node->next) {
+		if (compare$$(data,node->data) == 0) {
+			remove$$Node(list,node);
+			data = node->data;
+			free$$NodeOnly(node);
+			return data;
+		}
+	}
+	return NULL;
+}
 
+int compare$$List($$List *a_list,$$List *b_list) {
+	$$Node *a_node,*b_node;
+	for (a_node = a_list->head->next,b_node = b_list->head->next; a_node != NULL && b_node != NULL; a_node = a_node->next, b_node = b_node->next) {
+		int comparison = compare$$(a_node->data,b_node->data);
+		if (comparison < 0) return -1;
+		else if (comparison > 0) return 1;
+	}
+	if (a_node == b_node) return 0;
+	else if (a_node == NULL) return -1;
+	else return 1;
+}
+
+$$List *append$$ListToList($$List *list,$$List *second_list) {
+	$$Node *node;
+	for (node = second_list->head->next; node != NULL; node = node->next) {
+		append$$(list,dup$$(node->data));
+	}
+	return list;
+}
+
+$$List *append$$ListToListShallow($$List *list,$$List *second_list) {
+	$$Node *node;
+	for (node = second_list->head->next; node != NULL; node = node->next) {
+		append$$(list,node->data);
+	}
+	return list;
+}
+
+$$List* prepend$$Node($$List *list,$$Node *node) {
+	if (list->size == 0) return append$$Node(list,node);
+	else {
+		$$Node *head = list->head;
+		node->next = head->next;
+		node->prev = head;
+		head->next->prev = node;
+		head->next = node;
+		list->size++;
+		return list;
+	}
+}
+
+$$List* prepend$$($$List *list,$$ *data) {
+	return prepend$$Node(list,new$$Node(data));
+}
+
+$$List* prepend$$WoP($$List *list,$$ data) {
+	$$* pdata = ($$*)malloc(sizeof($$));
+	*pdata = data;
+	return prepend$$(list,pdata);
+}
 
 

@@ -2,14 +2,34 @@
 #include "$kk$k$vv$vhashtable.h"
 
 void print$Kk$K$Vv$VEntry($Kk$K$Vv$VEntry *data) {
-    printf("%s -> %d\n",(char*)data->key,*data->value);
+    print$Kk$(data->key);
+    printf(" -> ");
+    print$Vv$(data->value);
+    printf("\n");
 }
 
 void free$Kk$K$Vv$VEntry($Kk$K$Vv$VEntry *data) {
     free$Kk$(data->key);
-    free$Vv$(data->value);
+    if (data != NULL) free$Vv$(data->value);
     free(data);
 }
+
+void free$Kk$K$Vv$VEntryOnly($Kk$K$Vv$VEntry *data) {
+    free(data);
+}
+
+$Kk$K$Vv$VEntry* dup$Kk$K$Vv$VEntry($Kk$K$Vv$VEntry *data) {
+    return new$Kk$K$Vv$VEntry(dup$Kk$(data->key),dup$Vv$(data->value));
+}
+
+$Kk$K$Vv$VEntry* dup$Kk$K$Vv$VEntryOnly($Kk$K$Vv$VEntry *data) {
+    return new$Kk$K$Vv$VEntry(data->key,data->value);
+}
+
+int compare$Kk$K$Vv$VEntry($Kk$K$Vv$VEntry *a,$Kk$K$Vv$VEntry *b) {
+    return compare$Kk$(a->key,b->key);
+}
+
 
 $Kk$K$Vv$VHashTable *new$Kk$K$Vv$VHashTable(int min_capacity) {
     int i;
@@ -28,25 +48,42 @@ $Kk$K$Vv$VHashTable *new$Kk$K$Vv$VHashTable(int min_capacity) {
 }
 
 void free$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table) {
-    if (table->table != NULL) {
-        $Kk$K$Vv$VEntryList *listptr;
-        int i;
-        for (i = 0; i < table->table_size; i++) {
-            listptr = table->table[i];
-            if (listptr != NULL) free$Kk$K$Vv$VEntryList(listptr);
+    if (table != NULL) {
+        if (table->table != NULL) {
+            $Kk$K$Vv$VEntryList *listptr;
+            int i;
+            for (i = 0; i < table->table_size; i++) {
+                listptr = table->table[i];
+                if (listptr != NULL) free$Kk$K$Vv$VEntryList(listptr);
+            }
+            free(table->table);
         }
-        free(table->table);
+        free(table);
     }
-    free(table);
 }
 
-int shouldExpandTable($Kk$K$Vv$VHashTable *table) {
+void free$Kk$K$Vv$VHashTableOnly($Kk$K$Vv$VHashTable *table) {
+    if (table != NULL) {
+        if (table->table != NULL) {
+            $Kk$K$Vv$VEntryList *listptr;
+            int i;
+            for (i = 0; i < table->table_size; i++) {
+                listptr = table->table[i];
+                if (listptr != NULL) free$Kk$K$Vv$VEntryListOnly(listptr);
+            }
+            free(table->table);
+        }
+        free(table);
+    }
+}
+
+int shouldExpandTable$Kk$$Vv$($Kk$K$Vv$VHashTable *table) {
     float loadfactor = ((float)table->num_elements) / ((float)table->table_size);
     if (loadfactor > MAX_LOAD_FACTOR) return 1;
     else return 0;
 }
 
-void expandTable($Kk$K$Vv$VHashTable *table) {
+void expandTable$Kk$$Vv$($Kk$K$Vv$VHashTable *table) {
     int newtablesize = table->table_size << 1;
     int i;
     $Kk$K$Vv$VEntryList *bucket,*temp;
@@ -94,7 +131,7 @@ void putEntry$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$K$Vv$VEntry *ent
 
     append$Kk$K$Vv$VEntry(list,entry);
     table->num_elements++;
-    if (shouldExpandTable(table)) expandTable(table);
+    if (shouldExpandTable$Kk$$Vv$(table)) expandTable$Kk$$Vv$(table);
 }
 
 $Kk$K$Vv$VEntry *new$Kk$K$Vv$VEntry($Kk$ *key,$Vv$ *value) {
@@ -124,5 +161,36 @@ $Vv$ *getValue$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$ *key) {
     } else return NULL;
 }
 
+$Vv$* remove$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table,$Kk$ *key) {
+    unsigned int hashvalue = hash$Kk$(key)%table->table_size;
+    $Kk$K$Vv$VEntryList *bucket = table->table[hashvalue];
+    if (bucket != NULL) {
+        $Kk$K$Vv$VEntry *temp = new$Kk$K$Vv$VEntry(dup$Kk$(key),NULL),*entry;
+        entry = remove$Kk$K$Vv$VEntry(bucket,temp);
+        free$Kk$K$Vv$VEntryOnly(temp);
+        if (entry != NULL) {
+            $Vv$ *v = entry->value;
+            free$Kk$K$Vv$VEntryOnly(entry);
+            return v;
+        } else return NULL;
+    } else return NULL;
+}
 
+$Kk$K$Vv$VEntryList* splat$Kk$K$Vv$VHashTable($Kk$K$Vv$VHashTable *table) {
+    $Kk$K$Vv$VEntryList *list = new$Kk$K$Vv$VEntryList();
+
+    if (table != NULL) {
+        if (table->table != NULL) {
+            $Kk$K$Vv$VEntryList *listptr;
+            int i;
+            for (i = 0; i < table->table_size; i++) {
+                listptr = table->table[i];
+                if (listptr != NULL) append$Kk$K$Vv$VEntryListToListShallow(list,listptr);
+            }
+            // free(table->table);
+        }
+        // free(table);
+    }
+    return list;
+}
 
